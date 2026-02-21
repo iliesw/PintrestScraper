@@ -70,10 +70,11 @@ export class PinterestScraper {
   }
 
   private async newPage(): Promise<Page> {
-    if (!this.browser) throw new Error("Browser not initialized. Call init() first.");
+    if (!this.browser)
+      throw new Error("Browser not initialized. Call init() first.");
     const page = await this.browser.newPage();
     await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     );
     await page.setViewport({ width: 1280, height: 800 });
     // Block images/fonts to speed up scraping
@@ -110,21 +111,28 @@ export class PinterestScraper {
         const pinElements = document.querySelectorAll('[data-test-id="pin"]');
         const results: any[] = [];
 
-        pinElements.forEach((el: { querySelector: (arg0: string) => any; }) => {
+        pinElements.forEach((el: { querySelector: (arg0: string) => any }) => {
           const imgEl = el.querySelector("img");
           const linkEl = el.querySelector("a");
-          const titleEl = el.querySelector('[data-test-id="pinTitle"]') || el.querySelector("h3");
-          const descEl = el.querySelector('[data-test-id="pin-closeup-description"]');
+          const titleEl =
+            el.querySelector('[data-test-id="pinTitle"]') ||
+            el.querySelector("h3");
+          const descEl = el.querySelector(
+            '[data-test-id="pin-closeup-description"]',
+          );
 
           const href = linkEl?.getAttribute("href") ?? "";
           const pinId = href.match(/\/pin\/(\d+)/)?.[1] ?? "";
 
           if (!pinId) return;
 
-          results.push({
-            id: pinId,
-            imageUrl: (imgEl?.getAttribute("src") ?? imgEl?.getAttribute("data-src") ?? "").replace("236x","1200x"),
-          });
+          results.push(
+            (
+              imgEl?.getAttribute("src") ??
+              imgEl?.getAttribute("data-src") ??
+              ""
+            ).replace("236x", "1200x"),
+          );
         });
 
         return results;
@@ -151,10 +159,12 @@ export class PinterestScraper {
         const pinElements = document.querySelectorAll('[data-test-id="pin"]');
         const results: any[] = [];
 
-        pinElements.forEach((el: { querySelector: (arg0: string) => any; }) => {
+        pinElements.forEach((el: { querySelector: (arg0: string) => any }) => {
           const imgEl = el.querySelector("img");
           const linkEl = el.querySelector("a");
-          const titleEl = el.querySelector('[data-test-id="pinTitle"]') || el.querySelector("h3");
+          const titleEl =
+            el.querySelector('[data-test-id="pinTitle"]') ||
+            el.querySelector("h3");
 
           const href = linkEl?.getAttribute("href") ?? "";
           const pinId = href.match(/\/pin\/(\d+)/)?.[1] ?? "";
@@ -194,9 +204,15 @@ export class PinterestScraper {
         const imgEl =
           document.querySelector('[data-test-id="pin-closeup-image"] img') ||
           document.querySelector("img[srcset]");
-        const titleEl = document.querySelector('[data-test-id="pinTitle"]') || document.querySelector("h1");
-        const descEl = document.querySelector('[data-test-id="pin-closeup-description"]');
-        const linkEl = document.querySelector('[data-test-id="pin-closeup-link"] a');
+        const titleEl =
+          document.querySelector('[data-test-id="pinTitle"]') ||
+          document.querySelector("h1");
+        const descEl = document.querySelector(
+          '[data-test-id="pin-closeup-description"]',
+        );
+        const linkEl = document.querySelector(
+          '[data-test-id="pin-closeup-link"] a',
+        );
         const repinsEl = document.querySelector('[data-test-id="save-count"]');
 
         const pinId = url.match(/\/pin\/(\d+)/)?.[1] ?? "";
@@ -208,7 +224,8 @@ export class PinterestScraper {
           imageUrl: imgEl?.getAttribute("src") ?? "",
           link: linkEl?.getAttribute("href") ?? "",
           pinterestUrl: url,
-          repins: parseInt(repinsEl?.textContent?.replace(/\D/g, "") ?? "0") || 0,
+          repins:
+            parseInt(repinsEl?.textContent?.replace(/\D/g, "") ?? "0") || 0,
         };
       }, pinUrl);
 
@@ -231,16 +248,28 @@ export class PinterestScraper {
       await this.scroll(page);
 
       const profile = await page.evaluate((uname) => {
-        const nameEl = document.querySelector('[data-test-id="profile-name"]') || document.querySelector("h1");
-        const bioEl = document.querySelector('[data-test-id="profile-description"]');
-        const statsEls = document.querySelectorAll('[data-test-id="profile-follower-count"], [data-test-id="profile-following-count"]');
-        const monthlyEl = document.querySelector('[data-test-id="monthly-views"]');
+        const nameEl =
+          document.querySelector('[data-test-id="profile-name"]') ||
+          document.querySelector("h1");
+        const bioEl = document.querySelector(
+          '[data-test-id="profile-description"]',
+        );
+        const statsEls = document.querySelectorAll(
+          '[data-test-id="profile-follower-count"], [data-test-id="profile-following-count"]',
+        );
+        const monthlyEl = document.querySelector(
+          '[data-test-id="monthly-views"]',
+        );
 
-        const boardEls = document.querySelectorAll('[data-test-id="board-row"]');
+        const boardEls = document.querySelectorAll(
+          '[data-test-id="board-row"]',
+        );
         const boards: any[] = [];
 
-        boardEls.forEach((el: { querySelector: (arg0: string) => any; }) => {
-          const nameEl = el.querySelector('[data-test-id="board-name"]') || el.querySelector("h2");
+        boardEls.forEach((el: { querySelector: (arg0: string) => any }) => {
+          const nameEl =
+            el.querySelector('[data-test-id="board-name"]') ||
+            el.querySelector("h2");
           const linkEl = el.querySelector("a");
           const imgEl = el.querySelector("img");
           const countEl = el.querySelector('[data-test-id="board-pin-count"]');
@@ -249,7 +278,8 @@ export class PinterestScraper {
             id: linkEl?.getAttribute("href")?.split("/")[2] ?? "",
             name: nameEl?.textContent?.trim() ?? "",
             description: "",
-            pinCount: parseInt(countEl?.textContent?.replace(/\D/g, "") ?? "0") || 0,
+            pinCount:
+              parseInt(countEl?.textContent?.replace(/\D/g, "") ?? "0") || 0,
             url: `https://www.pinterest.com${linkEl?.getAttribute("href") ?? ""}`,
             coverImage: imgEl?.getAttribute("src") ?? "",
           });
