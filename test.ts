@@ -22,3 +22,4 @@ import retrievePins from "./scrapelite";
 console.time("search")
 const pins = await retrievePins("ads illustration poster")
 console.timeEnd("search")
+console.log(pins)
