@@ -8,5 +8,9 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@myno_21/pinterest-scraper": "^1.0.4",
+    "axios": "^1.13.5"
   }
 }
