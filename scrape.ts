@@ -114,13 +114,6 @@ export class PinterestScraper {
         pinElements.forEach((el: { querySelector: (arg0: string) => any }) => {
           const imgEl = el.querySelector("img");
           const linkEl = el.querySelector("a");
-          const titleEl =
-            el.querySelector('[data-test-id="pinTitle"]') ||
-            el.querySelector("h3");
-          const descEl = el.querySelector(
-            '[data-test-id="pin-closeup-description"]',
-          );
-
           const href = linkEl?.getAttribute("href") ?? "";
           const pinId = href.match(/\/pin\/(\d+)/)?.[1] ?? "";
 
@@ -138,7 +131,7 @@ export class PinterestScraper {
         return results;
       });
 
-      return pins;
+      return pins.filter(e=>e!="");
     } finally {
       await page.close();
     }
